@@ -1,0 +1,14 @@
+/.idea/
+/bin/
+/composer.lock
+/doc/
+/node_modules
+/package-lock.json
+/plaisio-assets.csv
+/vendor/
+/www/js/**/*.js
+/www/js/**/*.js.map
+/www/js/Plaisio/Form/Form.ts
+/www/js/Plaisio/Form/FormPackage.ts
+/www/js/Plaisio/Helper/
+/www/js/Plaisio/Kernel/
