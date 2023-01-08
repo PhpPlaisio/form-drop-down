@@ -135,6 +135,7 @@ export class DropDownControl
    */
   private createDropDownBox(): void
   {
+    this.removeMainDiv();
     this.createMainDiv();
     this.createSelectDiv();
     this.createListWrapper();
@@ -190,7 +191,7 @@ export class DropDownControl
           that.optionSelected(value);
 
           that.$select.val(value);
-          that.$select.trigger('input');
+          that.$select.trigger('change');
         });
       }
 
@@ -535,6 +536,16 @@ export class DropDownControl
 
   //--------------------------------------------------------------------------------------------------------------------
   /**
+   * Removes the outer div of the dropdown box, if any.
+   */
+  private removeMainDiv(): void
+  {
+    const data = JSON.parse(this.$select.attr('data-main-attributes') ?? '');
+    this.$select.next('.' + data['class']).remove();
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------
+  /**
    * Scrolls the selected value in to view.
    */
   private scrollSelectedInView(behavior: string): void
@@ -552,4 +563,4 @@ export class DropDownControl
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-// Plaisio\Console\Helper\TypeScript\TypeScriptMarkHelper::md5: 1f155735792eca8c3815223dc98bf6ad
+// Plaisio\Console\Helper\TypeScript\TypeScriptMarkHelper::md5: 768c946e38bb1bc2794169ca50c9943f
