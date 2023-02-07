@@ -563,4 +563,4 @@ export class DropDownControl
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-// Plaisio\Console\Helper\TypeScript\TypeScriptMarkHelper::md5: 768c946e38bb1bc2794169ca50c9943f
+// Plaisio\Console\TypeScript\Helper\MarkHelper::md5: 768c946e38bb1bc2794169ca50c9943f

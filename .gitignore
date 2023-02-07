@@ -1,7 +1,8 @@
 /.idea/
 /bin/
 /composer.lock
-/doc/
+/custom.task.properties
+/custom.type.properties
 /node_modules
 /package-lock.json
 /plaisio-assets.csv
