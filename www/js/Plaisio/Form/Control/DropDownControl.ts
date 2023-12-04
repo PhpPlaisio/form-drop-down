@@ -24,11 +24,6 @@ export class DropDownControl
   private $divSelect: JQuery = $();
 
   /**
-   * The open or closed indicator.
-   */
-  private $indicator: JQuery = $();
-
-  /**
    * The list with the select options.
    */
   private $list: JQuery = $();
@@ -42,6 +37,16 @@ export class DropDownControl
    * The element for searching in the options.
    */
   private $search: JQuery = $();
+
+  /**
+   * The span of the open or closed indicator.
+   */
+  private $spanIndicator: JQuery = $();
+
+  /**
+   * The span that holds the selected value.
+   */
+  private $spanValue: JQuery = $();
 
   /**
    * Characters to ignore when search for options.
@@ -136,6 +141,50 @@ export class DropDownControl
   private createDropDownBox(): void
   {
     this.removeMainDiv();
+
+    switch (this.$select.find('option').length)
+    {
+      case 0:
+        // Nothing to do.
+        break;
+
+      case 1:
+        this.createDropDownBox1();
+        break;
+
+      default:
+        this.createDropDownBox2();
+    }
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------
+  /**
+   * Generates and inserts HTML code for the dropdown box with 1 element.
+   */
+  private createDropDownBox1(): void
+  {
+    this.createMainDiv();
+
+    this.$divSelect = $('<div>').attr(JSON.parse(this.$select.attr('data-select-attributes') ?? ''))
+                                .appendTo(this.$divMain);
+
+    const $option = this.$select.find('option');
+    $('<span>').attr(JSON.parse(this.$select.attr('data-value-attributes') ?? ''))
+               .text(Cast.toManString($option.text(), ''))
+               .appendTo(this.$divSelect);
+
+    this.$divMain.insertAfter(this.$select);
+
+    this.$select.val($option.prop('value'));
+    this.$select.trigger('change');
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------
+  /**
+   * Generates and inserts HTML code for the dropdown box with 2 or more elements.
+   */
+  private createDropDownBox2(): void
+  {
     this.createMainDiv();
     this.createSelectDiv();
     this.createListWrapper();
@@ -161,11 +210,11 @@ export class DropDownControl
    */
   private createList(): void
   {
-    this.$list = $('<ul>').attr(JSON.parse(this.$select.attr('data-list-attributes') ?? ''))
-                          .css('width', this.$select.outerWidth() ?? '');
+    this.$list = $('<ul>').attr(JSON.parse(this.$select.attr('data-list-attributes') ?? ''));
 
-    let $selected    = null;
-    const options    = this.$select.find('option').get();
+    let $selected = null;
+    const options = this.$select.find('option').get();
+
     const attributes = JSON.parse(this.$select.attr('data-option-attributes') ?? '{}');
     for (let i = 0; i < options.length; i += 1)
     {
@@ -243,7 +292,6 @@ export class DropDownControl
     if (attributes !== '')
     {
       this.$search = $('<input>').attr(JSON.parse(attributes))
-                                 .css('width', this.$select.outerWidth() ?? '')
                                  .appendTo(this.$listWrapper);
     }
   }
@@ -254,12 +302,15 @@ export class DropDownControl
    */
   private createSelectDiv(): void
   {
-    this.$divSelect = $('<div>').attr(JSON.parse(this.$select.attr('data-select-attributes') ?? ''))
-                                .text(Cast.toManString(this.$select.attr('data-text'), ''));
+    this.$divSelect = $('<div>').attr(JSON.parse(this.$select.attr('data-select-attributes') ?? ''));
 
-    this.$indicator = $('<span>').attr(JSON.parse(this.$select.attr('data-indicator-attributes') ?? ''))
-                                 .addClass('is-closed')
+    this.$spanValue = $('<span>').attr(JSON.parse(this.$select.attr('data-value-attributes') ?? ''))
+                                 .text(Cast.toManString(this.$select.attr('data-text'), ''))
                                  .appendTo(this.$divSelect);
+
+    this.$spanIndicator = $('<span>').attr(JSON.parse(this.$select.attr('data-indicator-attributes') ?? ''))
+                                     .addClass('is-closed')
+                                     .appendTo(this.$divSelect);
 
     const that = this;
     this.$divSelect.on('click', function ()
@@ -278,7 +329,7 @@ export class DropDownControl
   {
     if (this.open)
     {
-      this.$indicator.removeClass('is-open').addClass('is-closed');
+      this.$spanIndicator.removeClass('is-open').addClass('is-closed');
       this.$listWrapper.slideToggle(400);
       this.open = false;
     }
@@ -292,7 +343,7 @@ export class DropDownControl
   {
     if (!this.open)
     {
-      this.$indicator.addClass('is-open').removeClass('is-closed');
+      this.$spanIndicator.addClass('is-open').removeClass('is-closed');
 
       const that = this;
       setTimeout(function ()
@@ -305,6 +356,11 @@ export class DropDownControl
       {
         that.scrollSelectedInView('smooth');
       });
+
+      const width = Cast.toManFloat(this.$select.outerWidth() ?? null, 0) -
+        parseFloat(this.$listWrapper.css('borderLeftWidth')) -
+        parseFloat(this.$listWrapper.css('borderRightWidth'));
+      this.$listWrapper.css('width', width);
 
       this.open = true;
     }
@@ -521,11 +577,11 @@ export class DropDownControl
 
     if (text === '')
     {
-      this.$divSelect.contents().first().html('&nbsp;');
+      this.$spanValue.html('&nbsp;');
     }
     else
     {
-      this.$divSelect.contents().first()[0].textContent = text;
+      this.$spanValue.text(text);
     }
     this.$list.find('li.is-selected').removeClass('is-selected');
     $li.addClass('is-selected');
@@ -563,4 +619,4 @@ export class DropDownControl
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-// Plaisio\Console\TypeScript\Helper\MarkHelper::md5: 768c946e38bb1bc2794169ca50c9943f
+// Plaisio\Console\TypeScript\Helper\MarkHelper::md5: 99cdee549e602db731d218ee0e65939b

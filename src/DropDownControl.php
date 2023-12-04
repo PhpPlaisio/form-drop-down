@@ -59,6 +59,8 @@ class DropDownControl extends SelectControl
                        json_encode(['class' => implode(' ', $walker->getClasses(self::$cssClass.'-main'))]))
          ->setAttrData('select-attributes',
                        json_encode(['class' => implode(' ', $walker->getClasses(self::$cssClass.'-select'))]))
+         ->setAttrData('value-attributes',
+                       json_encode(['class' => implode(' ', $walker->getClasses(self::$cssClass.'-value'))]))
          ->setAttrData('indicator-attributes',
                        json_encode(['class' => implode(' ', $walker->getClasses(self::$cssClass.'-indicator'))]))
          ->setAttrData('list-wrapper-attributes',
