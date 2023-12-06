@@ -429,6 +429,22 @@ export class DropDownControl
     this.installCloseDropBoxHandler();
     this.installFilterEventHandler();
     this.installInputEventHandler();
+    this.installChangedHandler();
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------
+  /**
+   * Change the displayed value when the selected value of the select element has been changed (by JavaScript).
+   */
+  private installChangedHandler(): void
+  {
+    const that = this;
+    this.$select.on('change', function ()
+    {
+      console.log('changed');
+      console.log(that.$select.find('option:selected').text());
+      that.$spanValue.text(that.$select.find('option:selected').text())
+    });
   }
 
   //--------------------------------------------------------------------------------------------------------------------
@@ -619,4 +635,4 @@ export class DropDownControl
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-// Plaisio\Console\TypeScript\Helper\MarkHelper::md5: 99cdee549e602db731d218ee0e65939b
+// Plaisio\Console\TypeScript\Helper\MarkHelper::md5: 3880feabd8e1c92b12bde2a64d79bfca
