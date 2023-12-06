@@ -83,11 +83,11 @@ export class DropDownControl
    */
   public static init(): void
   {
-    Kernel.onBeefyHtmlAdded(function (event: TriggeredEvent, $html: JQuery)
+    Kernel.onBeefyHtmlAdded(function (event: TriggeredEvent, $html: JQuery): void
     {
-      $html.find('select.drop-down-control').each(function ()
+      $html.find('select.drop-down-control').each(function (): void
       {
-        const $form = $(this);
+        const $form: JQuery = $(this);
         if (!$form.hasClass('is-registered'))
         {
           DropDownControl.selects.push(new DropDownControl($form));
@@ -111,7 +111,7 @@ export class DropDownControl
     }
 
     // See https://stackoverflow.com/questions/990904/remove-accents-diacritics-in-a-string-in-javascript
-    let tmp = string.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    let tmp: string = string.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 
     if (this.ignoreFilter)
     {
@@ -127,7 +127,7 @@ export class DropDownControl
    */
   private clickOutside(event: JQuery.TriggeredEvent): void
   {
-    const classes = '.' + (this.$divMain.attr('class') ?? '').split(' ').join('.');
+    const classes: string = '.' + (this.$divMain.attr('class') ?? '').split(' ').join('.');
     if (!$(event.target).closest(classes).is(this.$divMain))
     {
       this.dropDownBoxClose();
@@ -168,7 +168,7 @@ export class DropDownControl
     this.$divSelect = $('<div>').attr(JSON.parse(this.$select.attr('data-select-attributes') ?? ''))
                                 .appendTo(this.$divMain);
 
-    const $option = this.$select.find('option');
+    const $option: JQuery = this.$select.find('option');
     $('<span>').attr(JSON.parse(this.$select.attr('data-value-attributes') ?? ''))
                .text(Cast.toManString($option.text(), ''))
                .appendTo(this.$divSelect);
@@ -212,22 +212,22 @@ export class DropDownControl
   {
     this.$list = $('<ul>').attr(JSON.parse(this.$select.attr('data-list-attributes') ?? ''));
 
-    let $selected = null;
-    const options = this.$select.find('option').get();
+    let $selected                      = null;
+    const options: HTMLOptionElement[] = this.$select.find('option').get();
 
     const attributes = JSON.parse(this.$select.attr('data-option-attributes') ?? '{}');
     for (let i = 0; i < options.length; i += 1)
     {
-      const $option = $(options[i]);
-      const value   = $option.prop('value');
-      let html      = $option.html();
+      const $option: JQuery = $(options[i]);
+      const value           = $option.prop('value');
+      let html: string      = $option.html();
       if (html === ' ')
       {
         html = '&nbsp';
       }
 
       attributes['data-value'] = value;
-      const $li                = $('<li>').attr(attributes).html(html);
+      const $li: JQuery        = $('<li>').attr(attributes).html(html);
       if ($option.attr('disabled'))
       {
         $li.addClass('is-disabled');
@@ -235,7 +235,7 @@ export class DropDownControl
       else
       {
         const that = this;
-        $li.on('click', function ()
+        $li.on('click', function (): void
         {
           that.optionSelected(value);
 
@@ -288,7 +288,7 @@ export class DropDownControl
    */
   private createSearchInput(): void
   {
-    const attributes = this.$select.attr('data-search-attributes') ?? '';
+    const attributes: string = this.$select.attr('data-search-attributes') ?? '';
     if (attributes !== '')
     {
       this.$search = $('<input>').attr(JSON.parse(attributes))
@@ -313,7 +313,7 @@ export class DropDownControl
                                      .appendTo(this.$divSelect);
 
     const that = this;
-    this.$divSelect.on('click', function ()
+    this.$divSelect.on('click', function (): void
     {
       that.dropDownBoxToggle();
     });
@@ -346,7 +346,7 @@ export class DropDownControl
       this.$spanIndicator.addClass('is-open').removeClass('is-closed');
 
       const that = this;
-      setTimeout(function ()
+      setTimeout(function (): void
       {
         that.scrollSelectedInView('auto');
         that.$search.trigger('focus');
@@ -357,7 +357,7 @@ export class DropDownControl
         that.scrollSelectedInView('smooth');
       });
 
-      const width = Cast.toManFloat(this.$select.outerWidth() ?? null, 0) -
+      const width: number = Cast.toManFloat(this.$select.outerWidth() ?? null, 0) -
         parseFloat(this.$listWrapper.css('borderLeftWidth')) -
         parseFloat(this.$listWrapper.css('borderRightWidth'));
       this.$listWrapper.css('width', width);
@@ -388,13 +388,13 @@ export class DropDownControl
    */
   private filter(): void
   {
-    const filter = this.toLowerCaseNoDiacritics(Cast.toManString(this.$search.val(), ''));
+    const filter: string = this.toLowerCaseNoDiacritics(Cast.toManString(this.$search.val(), ''));
 
-    const items = this.$list.find('li').get();
+    const items: HTMLElement[] = this.$list.find('li').get();
     for (let i = 0; i < items.length; i += 1)
     {
-      const $item = $(items[i]);
-      const value = this.toLowerCaseNoDiacritics($item.text());
+      const $item: JQuery = $(items[i]);
+      const value: string = this.toLowerCaseNoDiacritics($item.text());
 
       if (value.indexOf(filter) !== -1)
       {
@@ -409,12 +409,27 @@ export class DropDownControl
 
   //--------------------------------------------------------------------------------------------------------------------
   /**
+   * Change the displayed value when the selected value of the select element has been changed (by JavaScript).
+   */
+  private installChangedHandler(): void
+  {
+    const that = this;
+    this.$select.on('change', function (): void
+    {
+      console.log('changed');
+      console.log(that.$select.find('option:selected').text());
+      that.$spanValue.text(that.$select.find('option:selected').text());
+    });
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------
+  /**
    * Close an open dropdown box when clicked outside the dropdown box.
    */
   private installCloseDropBoxHandler(): void
   {
     const that = this;
-    $('body').on('click', function (event: JQuery.TriggeredEvent)
+    $('body').on('click', function (event: JQuery.TriggeredEvent): void
     {
       that.clickOutside(event);
     });
@@ -434,21 +449,6 @@ export class DropDownControl
 
   //--------------------------------------------------------------------------------------------------------------------
   /**
-   * Change the displayed value when the selected value of the select element has been changed (by JavaScript).
-   */
-  private installChangedHandler(): void
-  {
-    const that = this;
-    this.$select.on('change', function ()
-    {
-      console.log('changed');
-      console.log(that.$select.find('option:selected').text());
-      that.$spanValue.text(that.$select.find('option:selected').text())
-    });
-  }
-
-  //--------------------------------------------------------------------------------------------------------------------
-  /**
    * Filters options according to the search box.
    */
   private installFilterEventHandler(): void
@@ -459,7 +459,7 @@ export class DropDownControl
     this.$search.val('');
 
     // Install event handler for ESC-key pressed in filter.
-    this.$search.on('keydown', function (event: JQuery.KeyDownEvent)
+    this.$search.on('keydown', function (event: JQuery.KeyDownEvent): void
     {
       // If the ESC-key was pressed or nothing is entered clear the value of the search box.
       if (event.key === 'Escape')
@@ -469,7 +469,7 @@ export class DropDownControl
     });
 
     // Install event handler for enter pressed
-    this.$search.on('keypress', function (event: JQuery.KeyPressEvent)
+    this.$search.on('keypress', function (event: JQuery.KeyPressEvent): void
     {
       // If the entry key is pressed and one option only is not filtered out then select the value nd prevent form
       // submission.
@@ -477,7 +477,7 @@ export class DropDownControl
       {
         event.preventDefault();
 
-        const $filtered = that.$list.find('li:visible');
+        const $filtered: JQuery = that.$list.find('li:visible');
         if ($filtered.length === 1)
         {
           $filtered.first().trigger('click');
@@ -485,10 +485,10 @@ export class DropDownControl
       }
     });
 
-    this.$listWrapper.on('keydown', function (event: JQuery.KeyDownEvent)
+    this.$listWrapper.on('keydown', function (event: JQuery.KeyDownEvent): void
     {
-      const $target = $(event.target);
-      const target  = $target.get()[0];
+      const $target: JQuery     = $(event.target);
+      const target: HTMLElement = $target.get()[0];
 
       if (event.key === 'Enter' && target.tagName === 'LI' && !$target.hasClass('is-disabled'))
       {
@@ -499,14 +499,14 @@ export class DropDownControl
       {
         if ($target.get()[0].tagName === 'INPUT')
         {
-          const $selected = that.$list.find('li.is-selected:not(.is-disabled):visible');
+          const $selected: JQuery = that.$list.find('li.is-selected:not(.is-disabled):visible');
           if ($selected.length > 0)
           {
             that.moveFocusTo($selected);
           }
           else
           {
-            const $first = that.$list.find('li:not(.is-disabled):visible');
+            const $first: JQuery = that.$list.find('li:not(.is-disabled):visible');
             if ($first.length > 0)
             {
               that.moveFocusTo($first);
@@ -516,7 +516,7 @@ export class DropDownControl
 
         if (target.tagName === 'LI')
         {
-          const $next = $target.nextAll('li:not(.is-disabled):visible');
+          const $next: JQuery = $target.nextAll('li:not(.is-disabled):visible');
           if ($next.length > 0)
           {
             that.moveFocusTo($next);
@@ -528,7 +528,7 @@ export class DropDownControl
       {
         if (target.tagName === 'LI')
         {
-          const $prev = $target.prevAll('li:not(.is-disabled):visible');
+          const $prev: JQuery = $target.prevAll('li:not(.is-disabled):visible');
           if ($prev.length > 0)
           {
             that.moveFocusTo($prev);
@@ -542,7 +542,7 @@ export class DropDownControl
     });
 
     // Install event handler for changed filter value.
-    this.$search.on('input', function ()
+    this.$search.on('input', function (): void
     {
       that.filter();
     });
@@ -555,7 +555,7 @@ export class DropDownControl
   private installInputEventHandler(): void
   {
     const that = this;
-    this.$select.on('input', function ()
+    this.$select.on('input', function (): void
     {
       that.optionSelected(Cast.toManString(that.$select.val(), ''));
     });
@@ -567,7 +567,7 @@ export class DropDownControl
    *
    * @param $element The element to move the focus to.
    */
-  private moveFocusTo($element: JQuery)
+  private moveFocusTo($element: JQuery): void
   {
     if ($element.length > 0)
     {
@@ -588,8 +588,8 @@ export class DropDownControl
    */
   private optionSelected(value: string): void
   {
-    const $li  = this.$list.find('li[data-value="' + $.escapeSelector(value) + '"]');
-    const text = $li.text();
+    const $li: JQuery  = this.$list.find('li[data-value="' + $.escapeSelector(value) + '"]');
+    const text: string = $li.text();
 
     if (text === '')
     {
@@ -622,7 +622,7 @@ export class DropDownControl
    */
   private scrollSelectedInView(behavior: string): void
   {
-    const element = this.$list.find('.is-selected').get()[0];
+    const element: HTMLElement = this.$list.find('.is-selected').get()[0];
     if (element)
     {
       element.scrollIntoView({
@@ -635,4 +635,4 @@ export class DropDownControl
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-// Plaisio\Console\TypeScript\Helper\MarkHelper::md5: 3880feabd8e1c92b12bde2a64d79bfca
+// Plaisio\Console\TypeScript\Helper\MarkHelper::md5: 832ba2de4c73786f725b2b584a16c4c5
