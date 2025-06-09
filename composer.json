@@ -12,12 +12,12 @@
     "ext-json": "*",
     "plaisio-ts/helper-cast": "^2.0.0",
     "plaisio-ts/kernel": "^2.1.0",
-    "plaisio/form": "^0.55.2",
-    "plaisio/helper-html": "^4.1.0"
+    "plaisio/form": "^0.55.5",
+    "plaisio/helper-html": "^4.2.0"
   },
   "require-dev": {
     "phing/phing": "^3.0.1",
-    "plaisio/console-kernel": "^1.0.1",
+    "plaisio/console-kernel": "^1.2.0",
     "plaisio/console-type-script": "^1.0.0"
   },
   "autoload": {
